@@ -2,8 +2,9 @@ function run(title, description) {
 
   const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
   const sheetName = "テーブル";
-
-  var form = call_createForm(title, description, sheetId, sheetName, 2, 4);
+  
+  var data = getData(sheetId, sheetName, 2, 4)
+  var form = createForm(title, description, data);
 
   Logger.log('Published URL: ' + form.getPublishedUrl());
   Logger.log('Editor URL: ' + form.getEditUrl());
@@ -22,22 +23,7 @@ function doPost(e) {
   var description = e.parameter.description;
   run(title, description);
 
-  return HtmlService.createHtmlOutputFromFile("result").evaluate();
-}
-
-/**
- * call_createForm
- * Googleフォームを生成するためのラッパー関数
- *
- * @param {sheetName:text} フォームの問題文と選択肢を取得するシートの名前
- * @param {startRow:int} 問題文と選択肢が格納されている先頭の行番号
- * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
- * @return {form} 生成されたGoogleフォーム(オブジェクト)
- */
-function call_createForm(title, description, sheetId, sheetName, startRow, startCol) {
-
-  return createForm(title, description, getData(sheetId, sheetName, startRow, startCol));
-
+  return HtmlService.createTemplateFromFile("result").evaluate();
 }
 
 /**
