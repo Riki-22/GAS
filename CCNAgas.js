@@ -23,7 +23,7 @@ function doPost(e) {
   var description = e.parameter.description;
   run(title, description);
 
-  return HtmlService.createTemplateFromFile("result").evaluate();
+  return HtmlService.createHtmlOutputFromFile("result");
 }
 
 /**
