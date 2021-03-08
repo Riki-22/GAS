@@ -1,10 +1,9 @@
-function run() {
+function run(title, description) {
 
-  const runSheetName = "テスト作成";
-  const tableSheetName = "テーブル";
-  const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'
+  const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
+  const sheetName = "テーブル";
 
-  var form = call_createForm(sheetId, runSheetName, tableSheetName, 2, 4);
+  var form = call_createForm(title, description, sheetId, sheetName, 2, 4);
 
   Logger.log('Published URL: ' + form.getPublishedUrl());
   Logger.log('Editor URL: ' + form.getEditUrl());
@@ -18,7 +17,11 @@ function doGet() {
   return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
 }
 
-function doPost() {
+function doPost(e) {
+  var title = e.parameter.title;
+  var description = e.parameter.description;
+  run(title, description);
+
   return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
 }
 
@@ -31,36 +34,10 @@ function doPost() {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {form} 生成されたGoogleフォーム(オブジェクト)
  */
-function call_createForm(sheetId, runSheetName, tableSheetName, startRow, startCol) {
+function call_createForm(title, description, sheetId, sheetName, startRow, startCol) {
 
-  return createForm(getTitle(sheetId, runSheetName), getDescription(sheetId, runSheetName), getData(sheetId, tableSheetName, startRow, startCol));
+  return createForm(title, description, getData(sheetId, sheetName, startRow, startCol));
 
-}
-
-/**
- * getTitle
- * 指定されたシートからフォームのタイトルを取得する
- *
- * @param {sheetName:text} フォームのタイトルを取得するシートの名前
- * @return {text} フォームのタイトル
- */
-function getTitle(sheetId, sheetName) {
-
-  return SpreadsheetApp.openById(sheetId).getSheetByName(sheetName).getRange("B1").getValue();
-
-}
-
-/**
- * getDescription
- * 指定されたシートからフォームの説明を取得する
- *
- * @param {sheetName:text} フォームの説明を取得するシートの名前
- * @return {text} フォームの説明
- */
-function getDescription(sheetId, sheetName) {
-
-  return SpreadsheetApp.openById(sheetId).getSheetByName(sheetName).getRange("B2").getValue();
-  
 }
 
 /**
