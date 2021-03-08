@@ -22,7 +22,7 @@ function doPost(e) {
   var description = e.parameter.description;
   run(title, description);
 
-  return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
+  return HtmlService.createHtmlOutputFromFile("result").evaluate();
 }
 
 /**
