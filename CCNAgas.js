@@ -2,8 +2,9 @@ function run() {
 
   const runSheetName = "テスト作成";
   const tableSheetName = "テーブル";
+  const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'
 
-  var form = call_createForm(runSheetName, tableSheetName, 2, 4);
+  var form = call_createForm(sheetId, runSheetName, tableSheetName, 2, 4);
 
   Logger.log('Published URL: ' + form.getPublishedUrl());
   Logger.log('Editor URL: ' + form.getEditUrl());
@@ -30,9 +31,9 @@ function doPost() {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {form} 生成されたGoogleフォーム(オブジェクト)
  */
-function call_createForm(runSheetName, tableSheetName, startRow, startCol) {
+function call_createForm(sheetId, runSheetName, tableSheetName, startRow, startCol) {
 
-  return createForm(getTitle(runSheetName), getDescription(runSheetName), getData(tableSheetName, startRow, startCol));
+  return createForm(getTitle(sheetId, runSheetName), getDescription(sheetId, runSheetName), getData(sheetId, tableSheetName, startRow, startCol));
 
 }
 
@@ -43,9 +44,9 @@ function call_createForm(runSheetName, tableSheetName, startRow, startCol) {
  * @param {sheetName:text} フォームのタイトルを取得するシートの名前
  * @return {text} フォームのタイトル
  */
-function getTitle(sheetName) {
+function getTitle(sheetId, sheetName) {
 
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getRange("B1").getValue();
+  return SpreadsheetApp.openById(sheetId).getSheetByName(sheetName).getRange("B1").getValue();
 
 }
 
@@ -56,9 +57,9 @@ function getTitle(sheetName) {
  * @param {sheetName:text} フォームの説明を取得するシートの名前
  * @return {text} フォームの説明
  */
-function getDescription(sheetName) {
+function getDescription(sheetId, sheetName) {
 
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName).getRange("B2").getValue();
+  return SpreadsheetApp.openById(sheetId).getSheetByName(sheetName).getRange("B2").getValue();
   
 }
 
@@ -71,9 +72,9 @@ function getDescription(sheetName) {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
  */
-function getData(sheetName, startRow, startCol) {
+function getData(sheetId, sheetName, startRow, startCol) {
   
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(sheetName);
   
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
