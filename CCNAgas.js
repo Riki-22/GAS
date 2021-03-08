@@ -1,19 +1,3 @@
-function run(title, description) {
-
-  const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
-  const sheetName = "テーブル";
-  
-  var data = getData(sheetId, sheetName, 2, 4)
-  var form = createForm(title, description, data);
-
-  Logger.log('Published URL: ' + form.getPublishedUrl());
-  Logger.log('Editor URL: ' + form.getEditUrl());
-  
-  const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
-  moveForm(form, folderId);
-  
-}
-
 function doGet() {
   return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
 }
@@ -21,9 +5,16 @@ function doGet() {
 function doPost(e) {
   var title = e.parameter.title;
   var description = e.parameter.description;
-  run(title, description);
+  const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
+  const sheetName = "テーブル";
+  
+  var data = getData(sheetId, sheetName, 2, 4)
+  var form = createForm(title, description, data);
+  
+  const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
+  moveForm(form, folderId);
 
-  return HtmlService.createHtmlOutputFromFile("result");
+  return ContentService.createTextOutput('Published URL: ' + form.getPublishedUrl() + '、Editor URL: ' + form.getEditUrl());
 }
 
 /**
