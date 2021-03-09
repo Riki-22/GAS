@@ -1,6 +1,7 @@
 const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
 // const sheetUrl = 'https://docs.google.com/spreadsheets/d/1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g/edit#gid=605267449';
-const sheetName = "テーブル";
+const inputSheet = 'テーブル';
+const outputSheet = 'テスト作成';
 const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
 
 function doGet() {
@@ -12,7 +13,7 @@ function doPost(e) {
   var description = e.parameter.description;
   var section = e.parameter.section;
   
-  var data = getData(2, 4);
+  var data = getData(section, 1, 1);
   var form = createForm(title, description, data);
   
   moveForm(form);
@@ -24,15 +25,18 @@ function doPost(e) {
  * getData
  * 指定されたシートからフォームの問題文と選択肢を取得する
  *
- * @param {sheetName:text} フォームの問題文と選択肢を取得するシートの名前
+ * @param {outputSheet:text} フォームの問題文と選択肢を取得するシートの名前
  * @param {startRow:int} 問題文と選択肢が格納されている先頭の行番号
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
  */
-function getData(startRow, startCol) {
+function getData(section, startRow, startCol) {
   
-  var sheet = SpreadsheetApp.openByUrl(sheetId).getSheetByName(sheetName);
-  
+  var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
+
+  var query = '=query(\'' + inputSheet + '\'!A2:L7, "select D,E,F,G,H,I,J,K,L where B = \'' + section + '\'")';
+  sheet.getRange(1,1).setValue(query);
+
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
   
