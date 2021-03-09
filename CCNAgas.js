@@ -81,11 +81,10 @@ function createForm(title, description, data) {
       choices.push(item.createChoice(qa[j], j == answer));
     }
     
-    item.setChoices(choices);
-    item.setPoints(1);
-    item.setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build());
-    item.setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
-    
+    item.setChoices(choices)
+        .setPoints(1)
+        .setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build())
+        .setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
   }
   
   return form;
