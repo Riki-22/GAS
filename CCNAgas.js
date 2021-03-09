@@ -3,15 +3,18 @@ function doGet() {
 }
 
 function doPost(e) {
+  //const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g/edit#gid=605267449';
+  const sheetName = "テーブル";
+  const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
+
   var title = e.parameter.title;
   var description = e.parameter.description;
-  const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
-  const sheetName = "テーブル";
+  var section = e.parameter.section;
   
-  var data = getData(sheetId, sheetName, 2, 4)
+  var data = getData(sheetUrl, sheetName, 2, 4);
   var form = createForm(title, description, data);
   
-  const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
   moveForm(form, folderId);
 
   return ContentService.createTextOutput('Published URL: ' + form.getPublishedUrl() + '、Editor URL: ' + form.getEditUrl());
@@ -26,9 +29,9 @@ function doPost(e) {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
  */
-function getData(sheetId, sheetName, startRow, startCol) {
+function getData(sheetUrl, sheetName, startRow, startCol) {
   
-  var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(sheetName);
+  var sheet = SpreadsheetApp.openByUrl(sheetUrl).getSheetByName(sheetName);
   
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
