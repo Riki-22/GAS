@@ -1,5 +1,4 @@
 const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
-// const sheetUrl = 'https://docs.google.com/spreadsheets/d/1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g/edit#gid=605267449';
 const inputSheet = 'テーブル';
 const outputSheet = 'テスト作成';
 const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
