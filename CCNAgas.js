@@ -1,21 +1,21 @@
+const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
+// const sheetUrl = 'https://docs.google.com/spreadsheets/d/1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g/edit#gid=605267449';
+const sheetName = "テーブル";
+const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
+
 function doGet() {
   return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
 }
 
 function doPost(e) {
-  //const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
-  const sheetUrl = 'https://docs.google.com/spreadsheets/d/1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g/edit#gid=605267449';
-  const sheetName = "テーブル";
-  const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
-
   var title = e.parameter.title;
   var description = e.parameter.description;
   var section = e.parameter.section;
   
-  var data = getData(sheetUrl, sheetName, 2, 4);
+  var data = getData(2, 4);
   var form = createForm(title, description, data);
   
-  moveForm(form, folderId);
+  moveForm(form);
 
   return ContentService.createTextOutput('Published URL: ' + form.getPublishedUrl() + '、Editor URL: ' + form.getEditUrl());
 }
@@ -29,9 +29,9 @@ function doPost(e) {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
  */
-function getData(sheetUrl, sheetName, startRow, startCol) {
+function getData(startRow, startCol) {
   
-  var sheet = SpreadsheetApp.openByUrl(sheetUrl).getSheetByName(sheetName);
+  var sheet = SpreadsheetApp.openByUrl(sheetId).getSheetByName(sheetName);
   
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
@@ -100,7 +100,7 @@ function createForm(title, description, data) {
  * @param form 生成されたGoogleフォーム(オブジェクト)
  * @param folderId 移動先のフォルダID
  */
-function moveForm(form, folderId) {
+function moveForm(form) {
 
    const file = DriveApp.getFileById(form.getId());
    const folder = DriveApp.getFolderById(folderId);
