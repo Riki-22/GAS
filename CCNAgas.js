@@ -2,17 +2,20 @@ const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
 const inputSheet = 'テーブル';
 const outputSheet = 'テスト作成';
 const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
+var title;
+var description;
+var section;
 
 function doGet() {
   return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
 }
 
 function doPost(e) {
-  var title = e.parameter.title;
-  var description = e.parameter.description;
-  var section = e.parameter.section;
+  title = e.parameter.title;
+  description = e.parameter.description;
+  section = e.parameter.section;
   
-  var data = getData(section, 2, 4);
+  var data = getData(2, 4);
   var form = createForm(title, description, data);
   
   moveForm(form);
@@ -29,14 +32,14 @@ function doPost(e) {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
  */
-function getData(section, startRow, startCol) {
+function getData(startRow, startCol) {
   
   var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
+  var colName = '=index(\'' + inputSheet + '\'!A1:L1)';
+  var recode = '=query(\'' + inputSheet + '\'!A:L, "select * where B = \'' + section + '\'")';
 
-  var col = '=index(\'' + inputSheet + '\'!A1:L1)';
-  sheet.getRange(1,1).setValue(col);
-  var query = '=query(\'' + inputSheet + '\'!A:L, "select * where B = \'' + section + '\'")';
-  sheet.getRange(2,1).setValue(query);
+  sheet.getRange(1,1).setValue(colName);
+  sheet.getRange(2,1).setValue(recode);
 
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
