@@ -12,7 +12,7 @@ function doPost(e) {
   var description = e.parameter.description;
   var section = e.parameter.section;
   
-  var data = getData(section, 1, 1);
+  var data = getData(section, 2, 4);
   var form = createForm(title, description, data);
   
   moveForm(form);
@@ -33,8 +33,10 @@ function getData(section, startRow, startCol) {
   
   var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
 
-  var query = '=query(\'' + inputSheet + '\'!A2:L7, "select D,E,F,G,H,I,J,K,L where B = \'' + section + '\'")';
-  sheet.getRange(1,1).setValue(query);
+  var col = '=index(\'' + inputSheet + '\'!A1:L1)';
+  sheet.getRange(1,1).setValue(col);
+  var query = '=query(\'' + inputSheet + '\'!A:L, "select * where B = \'' + section + '\'")';
+  sheet.getRange(2,1).setValue(query);
 
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
