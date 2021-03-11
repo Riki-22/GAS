@@ -1,3 +1,4 @@
+const formId = '1DBtgB_OBGMczLGXKKfnD1v3m0DxnyZormL8Vp1TAbqQ'; // コピー元のフォームID
 const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'; // スプレッドシートのID
 const inputSheet = 'テーブル'; // データテーブルのシート名
 const outputSheet = 'テスト作成';　//　出力先のシート名
@@ -70,13 +71,12 @@ function getData(startRow, startCol) {
  */
 function createForm(title, description, data) {
   
-  var form = FormApp.create(title);
-  
-  form.setDescription(description)
-      .setIsQuiz(true)
-      .setShuffleQuestions(random)
-      .setCollectEmail(true)
-      .setShowLinkToRespondAgain(false);
+  var doc = DriveApp.getFileById(formId);
+  var file = doc.makeCopy(title);
+  var form = FormApp.openById(file.getId());
+
+  form.setTitle(title)
+      .setDescription(description);
     
   var colName = data[0];
   for (var i = 1 ; i < data.length ; i++) {
@@ -87,7 +87,7 @@ function createForm(title, description, data) {
     var item = form.addMultipleChoiceItem();
     //var item = form.addCheckboxItem();
     
-    var choiceNums = qa.length - 4;
+    var choiceNums = qa.length - 4; // 選択肢の数
     var answer = qa[qa.length - 4];
     var comment = qa[qa.length - 1];
     
@@ -98,10 +98,10 @@ function createForm(title, description, data) {
     for (var j = 3 ; j < choiceNums ; j++) {
       if(qa[j] != '') {
         var choice = colName[j] + '：' + qa[j];
+        choices.push(item.createChoice(choice, j == answer));
       } else {
         break;
       }
-      choices.push(item.createChoice(choice, j == answer));
     }
     
     item.setChoices(choices)
