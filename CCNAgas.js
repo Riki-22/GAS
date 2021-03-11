@@ -47,8 +47,8 @@ function run() {
 function getData(startRow, startCol) {
   
   var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
-  var colNameRow = '=index(\'' + inputSheet + '\'!A1:L1)';
-  var query = '=query(\'' + inputSheet + '\'!A:L, "select * where B = \'' + section + '\'")';
+  var colNameRow = '=index(\'' + inputSheet + '\'!A1:N1)';
+  var query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section + '\'")';
 
   sheet.getRange(1,1).setValue(colNameRow);
   sheet.getRange(2,1).setValue(query);
@@ -87,19 +87,15 @@ function createForm(title, description, data) {
     var item = form.addMultipleChoiceItem();
     //var item = form.addCheckboxItem();
     
-    var numCols = qa.length;
-    var answer = 0;
-    var comment = 0;
-    
-    numCols = numCols - 2;
-    answer = qa[qa.length - 2];  
-    comment = qa[qa.length - 1];
+    var choiceNums = qa.length - 4;
+    var answer = qa[qa.length - 4];
+    var comment = qa[qa.length - 1];
     
     item.setTitle(titleNum + qa[2]);
     
     var choices = [];
     
-    for (var j = 3 ; j < numCols ; j++) {
+    for (var j = 3 ; j < choiceNums ; j++) {
       if(qa[j] != '') {
         var choice = colName[j] + '：' + qa[j];
       } else {
