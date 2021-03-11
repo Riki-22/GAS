@@ -1,7 +1,7 @@
-const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g';
-const inputSheet = 'テーブル';
-const outputSheet = 'テスト作成';
-const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv';
+const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'; // スプレッドシートID
+const inputSheet = 'テーブル'; // データテーブルのシート名
+const outputSheet = 'テスト作成';　//　出力先のシート名
+const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv'; // 移動先のフォルダID
 var title;
 var description;
 var section;
@@ -11,6 +11,7 @@ function doGet() {
 }
 
 function doPost(e) {
+  
   title = e.parameter.title;
   description = e.parameter.description;
   section = e.parameter.section;
