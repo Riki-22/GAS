@@ -90,7 +90,11 @@ function createForm(title, description, data) {
     var choices = [];
     
     for (var j = 3 ; j < numCols ; j++) {
-      var choice = colName[j] + '：' + qa[j]
+      if(qa[j] != '') {
+        var choice = colName[j] + '：' + qa[j];
+      } else {
+        break;
+      }
       choices.push(item.createChoice(choice, j == answer));
     }
     
