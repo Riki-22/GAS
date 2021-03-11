@@ -1,28 +1,32 @@
-const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'; // スプレッドシートID
+const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'; // スプレッドシートのID
 const inputSheet = 'テーブル'; // データテーブルのシート名
 const outputSheet = 'テスト作成';　//　出力先のシート名
 const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv'; // 移動先のフォルダID
+var mail;
 var title;
 var description;
 var section;
 
-function doGet() {
-  return HtmlService.createTemplateFromFile("CCNAtest").evaluate();
+function setResponses(e) {
+
+  var itemResponses = e.response.getItemResponses();
+  mail = itemResponses[0].getResponse();
+  title = itemResponses[1].getResponse();
+  description = itemResponses[2].getResponse();
+  section = itemResponses[3].getResponse();
+
+  run();
 }
 
-function doPost(e) {
-  
-  title = e.parameter.title;
-  description = e.parameter.description;
-  section = e.parameter.section;
+function run() {
   
   var data = getData(1, 2);
   var form = createForm(title, description, data);
   
   moveForm(form);
-
-  return ContentService.createTextOutput('Published URL: ' + form.getPublishedUrl() + '、Editor URL: ' + form.getEditUrl());
+  sendMail(form);
 }
+
 
 /**
  * getData
@@ -46,7 +50,6 @@ function getData(startRow, startCol) {
   var cols = sheet.getLastColumn();
   
   return sheet.getRange(startRow, startCol, rows - startRow + 1, cols - startCol + 1).getValues();
-  
 }
 
 /**
@@ -120,5 +123,10 @@ function moveForm(form) {
    const file = DriveApp.getFileById(form.getId());
    const folder = DriveApp.getFolderById(folderId);
    file.moveTo(folder);
+}
 
+function sendMail(form) {
+  var subject = 'テスト送信';
+  var body = 'Published URL: ' + form.getPublishedUrl() + '\nEditor URL: ' + form.getEditUrl();
+  GmailApp.sendEmail(mail, subject, body);
 }
