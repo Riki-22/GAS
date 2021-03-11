@@ -15,7 +15,7 @@ function doPost(e) {
   description = e.parameter.description;
   section = e.parameter.section;
   
-  var data = getData(2, 4);
+  var data = getData(1, 2);
   var form = createForm(title, description, data);
   
   moveForm(form);
@@ -36,10 +36,10 @@ function getData(startRow, startCol) {
   
   var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
   var colName = '=index(\'' + inputSheet + '\'!A1:L1)';
-  var recode = '=query(\'' + inputSheet + '\'!A:L, "select * where B = \'' + section + '\'")';
+  var query = '=query(\'' + inputSheet + '\'!A:L, "select * where B = \'' + section + '\'")';
 
   sheet.getRange(1,1).setValue(colName);
-  sheet.getRange(2,1).setValue(recode);
+  sheet.getRange(2,1).setValue(query);
 
   var rows = sheet.getLastRow();
   var cols = sheet.getLastColumn();
@@ -67,13 +67,13 @@ function createForm(title, description, data) {
       
   const validationEmail = FormApp.createTextValidation().requireTextIsEmail().build();
   form.addTextItem().setTitle('回答者(メールアドレス)').setRequired(true).setValidation(validationEmail);
-
-  for (var i = 0 ; i < data.length ; i++) {
+  
+  for (var i = 1 ; i < data.length ; i++) {
     
     var qa = data[i];
     
     // 複数選択の場合、checkboxに条件分岐が必要
-    var item = form.addMultipleChoiceItem()
+    var item = form.addMultipleChoiceItem();
     //var item = form.addCheckboxItem();
     
     var numCols = qa.length;
@@ -84,11 +84,11 @@ function createForm(title, description, data) {
     answer = qa[qa.length - 2];  
     comment = qa[qa.length - 1];
     
-    item.setTitle(qa[0]);
+    item.setTitle(qa[2]);
     
     var choices = [];
     
-    for (var j = 1 ; j < numCols ; j++) {
+    for (var j = 3 ; j < numCols ; j++) {
       choices.push(item.createChoice(qa[j], j == answer));
     }
     
