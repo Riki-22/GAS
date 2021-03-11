@@ -9,11 +9,11 @@ var section;
 
 function setResponses(e) {
 
+  mail = e.response.getRespondentEmail();
   var itemResponses = e.response.getItemResponses();
-  mail = itemResponses[0].getResponse();
-  title = itemResponses[1].getResponse();
-  description = itemResponses[2].getResponse();
-  section = itemResponses[3].getResponse();
+  title = itemResponses[0].getResponse();
+  description = itemResponses[1].getResponse();
+  section = itemResponses[2].getResponse();
 
   run();
 }
@@ -126,7 +126,8 @@ function moveForm(form) {
 }
 
 function sendMail(form) {
+  
   var subject = 'テスト送信';
-  var body = 'Published URL: ' + form.getPublishedUrl() + '\nEditor URL: ' + form.getEditUrl();
+  var body = '公開 URL: ' + form.getPublishedUrl() + '\n編集用 URL: ' + form.getEditUrl();
   GmailApp.sendEmail(mail, subject, body);
 }
