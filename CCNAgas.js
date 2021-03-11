@@ -6,6 +6,7 @@ var mail;
 var title;
 var description;
 var section;
+var random;
 
 function setResponses(e) {
 
@@ -14,6 +15,12 @@ function setResponses(e) {
   title = itemResponses[0].getResponse();
   description = itemResponses[1].getResponse();
   section = itemResponses[2].getResponse();
+  random = itemResponses[3].getResponse();
+  if (random == 'ランダムにする') {
+    random = true;
+  } else {
+    random = false;
+  }
 
   run();
 }
@@ -67,11 +74,10 @@ function createForm(title, description, data) {
   
   form.setDescription(description)
       .setIsQuiz(true)
+      .setShuffleQuestions(random)
+      .setCollectEmail(true)
       .setShowLinkToRespondAgain(false);
-      
-  const validationEmail = FormApp.createTextValidation().requireTextIsEmail().build();
-  form.addTextItem().setTitle('回答者(メールアドレス)').setRequired(true).setValidation(validationEmail);
-  
+    
   var colName = data[0];
   for (var i = 1 ; i < data.length ; i++) {
     
@@ -126,8 +132,8 @@ function moveForm(form) {
 }
 
 function sendMail(form) {
-  
+
   var subject = 'テスト送信';
-  var body = '公開 URL: ' + form.getPublishedUrl() + '\n編集用 URL: ' + form.getEditUrl();
+  var body = '公開用 URL: ' + form.getPublishedUrl() + '\n編集用 URL: ' + form.getEditUrl();
   GmailApp.sendEmail(mail, subject, body);
 }
