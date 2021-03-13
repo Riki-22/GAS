@@ -87,18 +87,19 @@ function createForm(title, description, data) {
     var item = form.addMultipleChoiceItem();
     //var item = form.addCheckboxItem();
     
-    var choiceNums = qa.length - 4; // 選択肢の数
     var answer = qa[qa.length - 4];
     var comment = qa[qa.length - 1];
     
     item.setTitle(titleNum + qa[2]);
     
     var choices = [];
-    
-    for (var j = 3 ; j < choiceNums ; j++) {
-      if(qa[j] != '') {
-        var choice = colName[j] + '：' + qa[j];
-        choices.push(item.createChoice(choice, j == answer));
+    var choice = ['a', 'b', 'c', 'd', 'e', 'f'];
+    var choiceNums = choice.length;
+    for (var j = 0 ; j < choiceNums ; j++) {
+      var k = j + 3;
+      if(qa[k] != '') {
+        var question = colName[k] + '：' + qa[k];
+        choices.push(item.createChoice(question, choice[j] == answer));
       } else {
         break;
       }
