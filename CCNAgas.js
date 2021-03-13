@@ -96,11 +96,14 @@ function createForm(title, description, data) {
     var choice = ['a', 'b', 'c', 'd', 'e', 'f'];
     var choiceNums = choice.length;
     for (var j = 0 ; j < choiceNums ; j++) {
+
       var k = j + 3;
       if(qa[k] != '') {
+
         var question = colName[k] + '：' + qa[k];
         choices.push(item.createChoice(question, choice[j] == answer));
       } else {
+        
         break;
       }
     }
