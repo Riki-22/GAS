@@ -2,7 +2,8 @@ const formId = '1DBtgB_OBGMczLGXKKfnD1v3m0DxnyZormL8Vp1TAbqQ'; // コピー元�
 const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'; // スプレッドシートのID
 const inputSheet = 'テーブル'; // データテーブルのシート名
 const outputSheet = 'テスト作成';　//　出力先のシート名
-const folderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv'; // 移動先のフォルダID
+const imageFolderId = '1Tbd4EPXxSxyIirGY8S7mMmPCEyg_GUdN'; // 画像が保存されているフォルダID
+const formFolderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv'; // 移動先のフォルダID
 var mail;
 var title;
 var description;
@@ -82,15 +83,18 @@ function createForm(title, description, data) {
   for (var i = 1 ; i < data.length ; i++) {
     
     var qa = data[i];
-    var titleNum = qa[0] + '-' + qa[1] + '：';    
+    var questionNum = qa[0] + '-' + qa[1];
+
+
+
     // 複数選択の場合、checkboxに条件分岐が必要
     var item = form.addMultipleChoiceItem();
     //var item = form.addCheckboxItem();
     
-    var answer = qa[qa.length - 4];
+    var answer = qa[qa.length - 2];
     var comment = qa[qa.length - 1];
     
-    item.setTitle(titleNum + qa[2]);
+    item.setTitle(questionNum + '：' + qa[2]);
     
     var choices = [];
     var choice = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -117,17 +121,23 @@ function createForm(title, description, data) {
   return form;
 }
 
+function setImage(questionNum) {
+
+  var fol = DriveApp.getFolderById(imageFolderId);
+  var image = fol.getFilesByName(questionNum).next();
+}
+
 /**
  * moveForm
  * 生成したフォームを指定のフォルダに移動する
  * 
  * @param form 生成されたGoogleフォーム(オブジェクト)
- * @param folderId 移動先のフォルダID
+ * @param formFolderId 移動先のフォルダID
  */
 function moveForm(form) {
 
-   const file = DriveApp.getFileById(form.getId());
-   const folder = DriveApp.getFolderById(folderId);
+   var file = DriveApp.getFileById(form.getId());
+   var folder = DriveApp.getFolderById(formFolderId);
    file.moveTo(folder);
 }
 
