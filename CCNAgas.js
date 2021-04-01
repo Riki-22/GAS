@@ -89,35 +89,55 @@ function createForm(title, description, data) {
       form.addImageItem().setImage(blob);
     }
 
-    // 複数選択の場合、checkboxに条件分岐が必要
-    var item = form.addMultipleChoiceItem();
-    //var item = form.addCheckboxItem();
-    
+
     var answer = qa[qa.length - 2];
     var comment = qa[qa.length - 1];
-    
-    item.setTitle(questionNum + '：' + qa[2]);
-    
     var choices = [];
     var choice = colName.slice(3, 9);
+    if (answer.length == 1) {
 
-    for (var j = 0 ; j < choice.length ; j++) {
-
-      var k = j + 3;
-      if(qa[k] != '') {
-
-        var question = colName[k] + '：' + qa[k];
-        choices.push(item.createChoice(question, choice[j] == answer));
-      } else {
+      var item = form.addMultipleChoiceItem();
         
-        break;
+      item.setTitle(questionNum + '：' + qa[2]);
+      
+      for (var j = 0 ; j < choice.length ; j++) {
+      
+        var k = j + 3;
+        if(qa[k] != '') {
+        
+          var question = colName[k] + '：' + qa[k];
+          choices.push(item.createChoice(question, choice[j] == answer));
+        } else {
+          
+          break;
+        }
+      }
+    } else {
+
+      var item = form.addCheckboxItem();
+
+      var answers = answer.split(',');
+      
+      item.setTitle(questionNum + '：' + qa[2]);
+      
+      for (var j = 0 ; j < choice.length ; j++) {
+      
+        var k = j + 3;
+        if(qa[k] != '') {
+        
+          var question = colName[k] + '：' + qa[k];
+          choices.push(item.createChoice(question, answers.includes(choice[j])));
+        } else {
+          
+          break;
+        }
       }
     }
-    
+
     item.setChoices(choices)
-        .setPoints(1)
-        .setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build())
-        .setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
+    .setPoints(1)
+    .setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build())
+    .setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
   }
   
   return form;
