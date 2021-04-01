@@ -63,6 +63,7 @@ function getData(startRow, startCol) {
  * @param {title:text} フォームの問題文と選択肢を取得するシートの名前
  * @param {description:text} 問題文と選択肢が格納されている先頭の行番号
  * @param {data:array} 問題文と選択肢が格納されている先頭の列番号
+ * @param {colName:array} 選択肢a~fを格納
  * @return {form} 生成されたGoogleフォーム(オブジェクト)
  */
 function createForm(title, description, data) {
@@ -98,9 +99,9 @@ function createForm(title, description, data) {
     item.setTitle(questionNum + '：' + qa[2]);
     
     var choices = [];
-    var choice = ['a', 'b', 'c', 'd', 'e', 'f'];
-    var choiceNums = choice.length;
-    for (var j = 0 ; j < choiceNums ; j++) {
+    var choice = colName.slice(3, 9);
+
+    for (var j = 0 ; j < choice.length ; j++) {
 
       var k = j + 3;
       if(qa[k] != '') {
