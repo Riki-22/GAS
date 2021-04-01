@@ -18,11 +18,6 @@ function setResponses(e) {
   description = itemResponses[1].getResponse();
   section = itemResponses[2].getResponse();
   random = itemResponses[3].getResponse();
-  if (random == 'ランダムにする') {
-    random = true;
-  } else {
-    random = false;
-  }
 
   run();
 }
@@ -84,8 +79,14 @@ function createForm(title, description, data) {
     
     var qa = data[i];
     var questionNum = qa[0] + '-' + qa[1];
+    var imageName = questionNum + '.png';  // ※正しい拡張子をつけること
 
-
+    var fol = DriveApp.getFolderById(imageFolderId);
+    if (fol.getFilesByName(imageName).hasNext()) {
+      
+      var blob = fol.getFilesByName(imageName).next().getBlob();
+      form.addImageItem().setImage(blob);
+    }
 
     // 複数選択の場合、checkboxに条件分岐が必要
     var item = form.addMultipleChoiceItem();
@@ -119,12 +120,6 @@ function createForm(title, description, data) {
   }
   
   return form;
-}
-
-function setImage(questionNum) {
-
-  var fol = DriveApp.getFolderById(imageFolderId);
-  var image = fol.getFilesByName(questionNum).next();
 }
 
 /**
