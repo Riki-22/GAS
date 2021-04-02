@@ -86,7 +86,10 @@ function createForm(title, description, data) {
     if (fol.getFilesByName(imageName).hasNext()) {
       
       var blob = fol.getFilesByName(imageName).next().getBlob();
-      form.addImageItem().setImage(blob);
+      var imageItem = form.addImageItem();
+      
+      imageItem.setImage(blob)
+      .setTitle(questionNum + '：図を参照して次の設問に回答してください。')
     }
 
 
