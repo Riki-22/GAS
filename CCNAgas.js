@@ -16,7 +16,7 @@ function setResponses(e) {
   var itemResponses = e.response.getItemResponses();
   title = itemResponses[0].getResponse();
   description = itemResponses[1].getResponse();
-  section = itemResponses[2].getResponse();
+  sections = itemResponses[2].getResponse();
   random = itemResponses[3].getResponse();
 
   run();
@@ -45,6 +45,7 @@ function getData(startRow, startCol) {
   
   var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
   var colNameRow = '=index(\'' + inputSheet + '\'!A1:N1)';
+  var section = sections.join('\' or B = \'')
   var query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section + '\'")';
 
   sheet.getRange(1,1).setValue(colNameRow);
@@ -73,7 +74,7 @@ function createForm(title, description, data) {
   var form = FormApp.openById(file.getId());
 
   form.setTitle(title)
-      .setDescription(description);
+    .setDescription(description);
     
   var colName = data[0];
   for (var i = 1 ; i < data.length ; i++) {
@@ -89,7 +90,7 @@ function createForm(title, description, data) {
       var imageItem = form.addImageItem();
       
       imageItem.setImage(blob)
-      .setTitle(questionNum + '：図を参照して次の設問に回答してください。')
+        .setTitle(questionNum + '：図を参照して次の設問に回答してください。')
     }
 
 
@@ -138,9 +139,9 @@ function createForm(title, description, data) {
     }
 
     item.setChoices(choices)
-    .setPoints(1)
-    .setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build())
-    .setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
+      .setPoints(1)
+      .setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build())
+      .setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
   }
   
   return form;
