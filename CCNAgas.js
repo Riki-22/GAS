@@ -14,7 +14,7 @@ var maxItem;
 function setResponses(e) {
 
   mail = e.response.getRespondentEmail();
-  var itemResponses = e.response.getItemResponses();
+  let itemResponses = e.response.getItemResponses();
   title = itemResponses[0].getResponse();
   description = itemResponses[1].getResponse();
   section = itemResponses[2].getResponse();
@@ -26,8 +26,8 @@ function setResponses(e) {
 
 function run() {
   
-  var data = getData(1, 2);
-  var form = createForm(title, description, data);
+  let data = getData(1, 2);
+  let form = createForm(title, description, data);
   
   moveForm(form);
   sendMail(form);
@@ -45,15 +45,15 @@ function run() {
  */
 function getData(startRow, startCol) {
   
-  var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
-  var colNameRow = '=index(\'' + inputSheet + '\'!A1:N1)';
-  var query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
+  let sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
+  let colNameRow = '=index(\'' + inputSheet + '\'!A1:N1)';
+  let query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
 
   sheet.getRange(1,1).setValue(colNameRow);
   sheet.getRange(2,1).setValue(query);
 
-  var rows = sheet.getLastRow();
-  var cols = sheet.getLastColumn();
+  let rows = sheet.getLastRow();
+  let cols = sheet.getLastColumn();
   
   return sheet.getRange(startRow, startCol, rows - startRow + 1, cols - startCol + 1).getValues();
 }
@@ -70,8 +70,8 @@ function getData(startRow, startCol) {
  */
 function createForm(title, description, data) {
   
-  var doc = DriveApp.getFileById(formId);
-  var file = doc.makeCopy(title);
+  let doc = DriveApp.getFileById(formId);
+  let file = doc.makeCopy(title);
   var form = FormApp.openById(file.getId());
 
   form.setTitle(title)
@@ -79,10 +79,19 @@ function createForm(title, description, data) {
     
   var colName = data[0];
   var dataLength;
+
   if (maxItem == 'なし') {
+
     dataLength = data.length;
   } else {
-    dataLength = Number(maxItem) + 1;
+
+    if(data.length < maxItem) {
+
+      dataLength = data.length;
+    } else {
+
+      dataLength = Number(maxItem) + 1;
+    }
   }
   
   for (var i = 1 ; i < dataLength ; i++) {
@@ -103,7 +112,7 @@ function createForm(title, description, data) {
 
 
     var answer = qa[qa.length - 2];
-    var comment = qa[qa.length - 1];
+    let comment = qa[qa.length - 1];
     var choices = [];
     var choice = colName.slice(3, 9);
     if (answer.length == 1) {
@@ -114,10 +123,10 @@ function createForm(title, description, data) {
       
       for (var j = 0 ; j < choice.length ; j++) {
       
-        var k = j + 3;
+        let k = j + 3;
         if(qa[k] != '') {
         
-          var question = colName[k] + '：' + qa[k];
+          let question = colName[k] + '：' + qa[k];
           choices.push(item.createChoice(question, choice[j] == answer));
         } else {
           
@@ -134,10 +143,10 @@ function createForm(title, description, data) {
       
       for (var j = 0 ; j < choice.length ; j++) {
       
-        var k = j + 3;
+        let k = j + 3;
         if(qa[k] != '') {
         
-          var question = colName[k] + '：' + qa[k];
+          let question = colName[k] + '：' + qa[k];
           choices.push(item.createChoice(question, answers.includes(choice[j])));
         } else {
           
@@ -164,14 +173,14 @@ function createForm(title, description, data) {
  */
 function moveForm(form) {
 
-   var file = DriveApp.getFileById(form.getId());
-   var folder = DriveApp.getFolderById(formFolderId);
-   file.moveTo(folder);
+  let createdForm = DriveApp.getFileById(form.getId());
+  let folder = DriveApp.getFolderById(formFolderId);
+  createdForm.moveTo(folder);
 }
 
 function sendMail(form) {
 
-  var subject = 'テスト送信';
-  var body = '公開用 URL: ' + form.getPublishedUrl() + '\n編集用 URL: ' + form.getEditUrl();
+  let subject = 'テスト送信';
+  let body = '公開用 URL: ' + form.getPublishedUrl() + '\n編集用 URL: ' + form.getEditUrl();
   GmailApp.sendEmail(mail, subject, body);
 }
