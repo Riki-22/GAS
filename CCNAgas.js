@@ -9,6 +9,7 @@ var title;
 var description;
 var section;
 var random;
+var maxItem;
 
 function setResponses(e) {
 
@@ -18,6 +19,7 @@ function setResponses(e) {
   description = itemResponses[1].getResponse();
   section = itemResponses[2].getResponse();
   random = itemResponses[3].getResponse();
+  maxItem = itemResponses[4].getResponse();
 
   run();
 }
@@ -76,7 +78,14 @@ function createForm(title, description, data) {
     .setDescription(description);
     
   var colName = data[0];
-  for (var i = 1 ; i < data.length ; i++) {
+  var dataLength;
+  if (maxItem == 'なし') {
+    dataLength = data.length;
+  } else {
+    dataLength = Number(maxItem) + 1;
+  }
+  
+  for (var i = 1 ; i < dataLength ; i++) {
     
     var qa = data[i];
     var questionNum = qa[0] + '-' + qa[1];
