@@ -15,7 +15,7 @@ function run(e) {
   let description = itemResponses[1].getResponse();
   let section = itemResponses[2].getResponse();
   let random = itemResponses[3].getResponse();
-  let maxItem = itemResponses[4].getResponse();
+  let maxItem = Number(itemResponses[4].getResponse());
 
   let data = getData(section, 1, 2); // データを取得するセルの開始位置(sectionカラムの最初のレコード)を入力
   let form = createForm(title, description, data, maxItem);
@@ -36,11 +36,11 @@ function run(e) {
 function getData(section, startRow, startCol) {
   
   let sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
-  let colNameRow = '=index(\'' + inputSheet + '\'!A1:N1)';
-  let query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
+  let colNameQuery = '=index(\'' + inputSheet + '\'!A1:N1)';
+  let recodeQuery = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
 
-  sheet.getRange(1,1).setValue(colNameRow);
-  sheet.getRange(2,1).setValue(query);
+  sheet.getRange(1,1).setValue(colNameQuery);
+  sheet.getRange(2,1).setValue(recodeQuery);
 
   let rows = sheet.getLastRow();
   let cols = sheet.getLastColumn();
@@ -67,58 +67,55 @@ function createForm(title, description, data, maxItem) {
   form.setTitle(title)
     .setDescription(description);
     
-  let dataLength;
+  let numOfQuestions;
+  // 出題数が上限を上回る場合、上限値を代入
+  if (data.length > maxItem) {
 
-  if (maxItem == 'なし') {
-
-    dataLength = data.length;
+    numOfQuestions = maxItem;
   } else {
 
-    if(data.length < maxItem) {
-
-      dataLength = data.length;
-    } else {
-
-      dataLength = Number(maxItem) + 1;
-    }
+    numOfQuestions = data.length - 1;
   }
-  
-  for (let i = 1 ; i < dataLength ; i++) {
+
+  // 出題数の数だけ繰り返す
+  for (let i = 1 ; i <= numOfQuestions ; i++) {
     
     let recode = data[i];
-    let questionNum = recode[0] + '-' + recode[1];
-    let imageName = questionNum + '.png';  // ※正しい拡張子をつけること
+    let section_questionNum = recode[0] + '-' + recode[1];
+    let imageName = section_questionNum + '.png';  // ※正しい拡張子をつけること
     let imageFolder = DriveApp.getFolderById(imageFolderId);
 
+    // 画像フォルダを参照し、該当の問題に画像がある場合は画像を挿入
     if (imageFolder.getFilesByName(imageName).hasNext()) {
       
       let blob = imageFolder.getFilesByName(imageName).next().getBlob();
       let imageItem = form.addImageItem();
       
       imageItem.setImage(blob)
-        .setTitle(questionNum + '：図を参照して次の設問に回答してください。')
+        .setTitle(section_questionNum + '：図を参照して次の設問に回答してください。')
     }
 
     let answer = recode[recode.length - 2];
-    let comment = recode[recode.length - 1];
-    let choices = [];
+    let commentary = recode[recode.length - 1];
     let colName = data[0];
-    let choice = colName.slice(3, 9);
+    let a_f = colName.slice(3, 9);
     let item;
+    let choices = [];
 
+    // 解答が１つの場合はラジオアイテム、複数の場合はチェックボックスアイテムを作成
     if (answer.length == 1) {
 
       item = form.addMultipleChoiceItem();
-        
-      item.setTitle(questionNum + '：' + recode[2]);
       
-      for (let j = 0 ; j < choice.length ; j++) {
+      item.setTitle(section_questionNum + '：' + recode[2]);
+      
+      for (let j = 0 ; j < a_f.length ; j++) {
       
         let k = j + 3;
         if(recode[k] != '') {
         
-          let question = colName[k] + '：' + recode[k];
-          choices.push(item.createChoice(question, choice[j] == answer));
+          let choiceTitle = colName[k] + '：' + recode[k];
+          choices.push(item.createChoice(choiceTitle, a_f[j] == answer));
         } else {
           
           break;
@@ -129,15 +126,15 @@ function createForm(title, description, data, maxItem) {
       item = form.addCheckboxItem();
       let answers = answer.split(',');
       
-      item.setTitle(questionNum + '：' + recode[2]);
+      item.setTitle(section_questionNum + '：' + recode[2]);
       
-      for (let j = 0 ; j < choice.length ; j++) {
+      for (let j = 0 ; j < a_f.length ; j++) {
       
         let k = j + 3;
         if(recode[k] != '') {
         
-          let question = colName[k] + '：' + recode[k];
-          choices.push(item.createChoice(question, answers.includes(choice[j])));
+          let choiceTitle = colName[k] + '：' + recode[k];
+          choices.push(item.createChoice(choiceTitle, answers.includes(a_f[j])));
         } else {
           
           break;
@@ -147,8 +144,8 @@ function createForm(title, description, data, maxItem) {
 
     item.setChoices(choices)
       .setPoints(1)
-      .setFeedbackForCorrect(FormApp.createFeedback().setText(comment).build())
-      .setFeedbackForIncorrect(FormApp.createFeedback().setText(comment).build());
+      .setFeedbackForCorrect(FormApp.createFeedback().setText(commentary).build())
+      .setFeedbackForIncorrect(FormApp.createFeedback().setText(commentary).build());
   }
   
   return form;
