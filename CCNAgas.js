@@ -98,24 +98,23 @@ function createForm(title, description, data, maxItem) {
     let answer = recode[recode.length - 2];
     let commentary = recode[recode.length - 1];
     let colName = data[0];
-    let a_f = colName.slice(3, 9);
     let item;
     let choices = [];
 
-    // 解答が１つの場合はラジオアイテム、複数の場合はチェックボックスアイテムを作成
+    // 解答が１つの場合はラジオアイテム、複数の場合はチェックボックスアイテムを追加
     if (answer.length == 1) {
 
       item = form.addMultipleChoiceItem();
       
       item.setTitle(section_questionNum + '：' + recode[2]);
       
-      for (let j = 0 ; j < a_f.length ; j++) {
+      // 選択肢a~fまでを追加
+      for (let j = colName.indexOf('a') ; j <= colName.indexOf('f') ; j++) {
       
-        let k = j + 3;
-        if(recode[k] != '') {
+        if(recode[j] != '') {
         
-          let choiceTitle = colName[k] + '：' + recode[k];
-          choices.push(item.createChoice(choiceTitle, a_f[j] == answer));
+          let choiceTitle = colName[j] + '：' + recode[j];
+          choices.push(item.createChoice(choiceTitle, colName[j] == answer));
         } else {
           
           break;
@@ -128,13 +127,12 @@ function createForm(title, description, data, maxItem) {
       
       item.setTitle(section_questionNum + '：' + recode[2]);
       
-      for (let j = 0 ; j < a_f.length ; j++) {
+      for (let j = colName.indexOf('a') ; j <= colName.indexOf('f') ; j++) {
       
-        let k = j + 3;
-        if(recode[k] != '') {
+        if(recode[j] != '') {
         
-          let choiceTitle = colName[k] + '：' + recode[k];
-          choices.push(item.createChoice(choiceTitle, answers.includes(a_f[j])));
+          let choiceTitle = colName[j] + '：' + recode[j];
+          choices.push(item.createChoice(choiceTitle, answers.includes(colName[j])));
         } else {
           
           break;
