@@ -95,6 +95,7 @@ function createForm(title, description, data, maxItem) {
         .setTitle(section_questionNum + '：図を参照して次の設問に回答してください。')
     }
 
+    let questionTitle = section_questionNum + '：' + recode[2];
     let answer = recode[recode.length - 2];
     let commentary = recode[recode.length - 1];
     let colName = data[0];
@@ -106,7 +107,7 @@ function createForm(title, description, data, maxItem) {
 
       item = form.addMultipleChoiceItem();
       
-      item.setTitle(section_questionNum + '：' + recode[2]);
+      item.setTitle(questionTitle);
       
       // 選択肢a~fまでを追加
       for (let j = colName.indexOf('a') ; j <= colName.indexOf('f') ; j++) {
@@ -125,7 +126,7 @@ function createForm(title, description, data, maxItem) {
       item = form.addCheckboxItem();
       let answers = answer.split(',');
       
-      item.setTitle(section_questionNum + '：' + recode[2]);
+      item.setTitle(questionTitle);
       
       for (let j = colName.indexOf('a') ; j <= colName.indexOf('f') ; j++) {
       
