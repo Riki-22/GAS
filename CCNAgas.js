@@ -85,7 +85,7 @@ function createForm(title, description, data, maxItem) {
     let imageName = section_questionNum + '.png';  // ※正しい拡張子をつけること
     let imageFolder = DriveApp.getFolderById(imageFolderId);
 
-    // 画像フォルダを参照し、該当の問題に画像がある場合は画像を挿入
+    // 画像フォルダを参照し、問題番号と同じファイル名の画像がある場合は画像を挿入
     if (imageFolder.getFilesByName(imageName).hasNext()) {
       
       let blob = imageFolder.getFilesByName(imageName).next().getBlob();
