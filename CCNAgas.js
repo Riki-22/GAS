@@ -55,20 +55,19 @@ function getData(section, startRow, startCol) {
  * @param {title:text} フォームの問題文と選択肢を取得するシートの名前
  * @param {description:text} 問題文と選択肢が格納されている先頭の行番号
  * @param {data:array} 問題文と選択肢が格納されている先頭の列番号
- * @param {colName:array} 選択肢a~fを格納
+ * @param {colName:array} 全てのカラム名
  * @return {form} 生成されたGoogleフォーム(オブジェクト)
  */
 function createForm(title, description, data, maxItem) {
   
   let doc = DriveApp.getFileById(formId);
   let file = doc.makeCopy(title);
-  var form = FormApp.openById(file.getId());
+  let form = FormApp.openById(file.getId());
 
   form.setTitle(title)
     .setDescription(description);
     
-  var colName = data[0];
-  var dataLength;
+  let dataLength;
 
   if (maxItem == 'なし') {
 
@@ -84,39 +83,41 @@ function createForm(title, description, data, maxItem) {
     }
   }
   
-  for (var i = 1 ; i < dataLength ; i++) {
+  for (let i = 1 ; i < dataLength ; i++) {
     
-    var qa = data[i];
-    var questionNum = qa[0] + '-' + qa[1];
-    var imageName = questionNum + '.png';  // ※正しい拡張子をつけること
-    var fol = DriveApp.getFolderById(imageFolderId);
+    let recode = data[i];
+    let questionNum = recode[0] + '-' + recode[1];
+    let imageName = questionNum + '.png';  // ※正しい拡張子をつけること
+    let imageFolder = DriveApp.getFolderById(imageFolderId);
 
-    if (fol.getFilesByName(imageName).hasNext()) {
+    if (imageFolder.getFilesByName(imageName).hasNext()) {
       
-      var blob = fol.getFilesByName(imageName).next().getBlob();
-      var imageItem = form.addImageItem();
+      let blob = imageFolder.getFilesByName(imageName).next().getBlob();
+      let imageItem = form.addImageItem();
       
       imageItem.setImage(blob)
         .setTitle(questionNum + '：図を参照して次の設問に回答してください。')
     }
 
-    var answer = qa[qa.length - 2];
-    let comment = qa[qa.length - 1];
-    var choices = [];
-    var choice = colName.slice(3, 9);
+    let answer = recode[recode.length - 2];
+    let comment = recode[recode.length - 1];
+    let choices = [];
+    let colName = data[0];
+    let choice = colName.slice(3, 9);
+    let item;
 
     if (answer.length == 1) {
 
-      var item = form.addMultipleChoiceItem();
+      item = form.addMultipleChoiceItem();
         
-      item.setTitle(questionNum + '：' + qa[2]);
+      item.setTitle(questionNum + '：' + recode[2]);
       
-      for (var j = 0 ; j < choice.length ; j++) {
+      for (let j = 0 ; j < choice.length ; j++) {
       
         let k = j + 3;
-        if(qa[k] != '') {
+        if(recode[k] != '') {
         
-          let question = colName[k] + '：' + qa[k];
+          let question = colName[k] + '：' + recode[k];
           choices.push(item.createChoice(question, choice[j] == answer));
         } else {
           
@@ -125,17 +126,17 @@ function createForm(title, description, data, maxItem) {
       }
     } else {
 
-      var item = form.addCheckboxItem();
-      var answers = answer.split(',');
+      item = form.addCheckboxItem();
+      let answers = answer.split(',');
       
-      item.setTitle(questionNum + '：' + qa[2]);
+      item.setTitle(questionNum + '：' + recode[2]);
       
-      for (var j = 0 ; j < choice.length ; j++) {
+      for (let j = 0 ; j < choice.length ; j++) {
       
         let k = j + 3;
-        if(qa[k] != '') {
+        if(recode[k] != '') {
         
-          let question = colName[k] + '：' + qa[k];
+          let question = colName[k] + '：' + recode[k];
           choices.push(item.createChoice(question, answers.includes(choice[j])));
         } else {
           
