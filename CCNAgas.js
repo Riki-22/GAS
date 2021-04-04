@@ -16,7 +16,7 @@ function setResponses(e) {
   var itemResponses = e.response.getItemResponses();
   title = itemResponses[0].getResponse();
   description = itemResponses[1].getResponse();
-  sections = itemResponses[2].getResponse();
+  section = itemResponses[2].getResponse();
   random = itemResponses[3].getResponse();
 
   run();
@@ -45,8 +45,7 @@ function getData(startRow, startCol) {
   
   var sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
   var colNameRow = '=index(\'' + inputSheet + '\'!A1:N1)';
-  var section = sections.join('\' or B = \'')
-  var query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section + '\'")';
+  var query = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
 
   sheet.getRange(1,1).setValue(colNameRow);
   sheet.getRange(2,1).setValue(query);
