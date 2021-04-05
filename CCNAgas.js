@@ -18,7 +18,8 @@ function run(e) {
   let maxItem = Number(itemResponses[4].getResponse());
 
   let data = getData(section, 1, 2); // データを取得するセルの開始位置(sectionカラムの最初のレコード)を入力
-  let form = createForm(title, description, data, maxItem);
+  let colName = data.splice(0, 1)[0]; // カラム名が格納されている最初の配列を切り出す
+  let form = createForm(title, description, colName, data, maxItem);
   
   moveForm(form);
   sendMail(mailAddress, form);
@@ -58,7 +59,7 @@ function getData(section, startRow, startCol) {
  * @param {colName:array} 全てのカラム名
  * @return {form} 生成されたGoogleフォーム(オブジェクト)
  */
-function createForm(title, description, data, maxItem) {
+function createForm(title, description, colName, data, maxItem) {
   
   let doc = DriveApp.getFileById(formId);
   let file = doc.makeCopy(title);
@@ -74,11 +75,11 @@ function createForm(title, description, data, maxItem) {
     numOfQuestions = maxItem;
   } else {
 
-    numOfQuestions = data.length - 1;
+    numOfQuestions = data.length;
   }
 
   // 出題数の数だけ繰り返す
-  for (let i = 1 ; i <= numOfQuestions ; i++) {
+  for (let i = 0 ; i < numOfQuestions ; i++) {
     
     let recode = data[i];
     let section_questionNum = recode[0] + '-' + recode[1];
@@ -98,7 +99,6 @@ function createForm(title, description, data, maxItem) {
     let questionTitle = section_questionNum + '：' + recode[2];
     let answer = recode[recode.length - 2];
     let commentary = recode[recode.length - 1];
-    let colName = data[0];
     let item;
     let choices = [];
 
