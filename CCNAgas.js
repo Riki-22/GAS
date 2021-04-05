@@ -1,5 +1,10 @@
 
-// 必ずインストーラブルトリガーをrunに指定すること
+/**
+ * run
+ * App Scriptダッシュボードでフォーム送信時のトリガーをrunに指定すること
+ * 
+ * @param {*} e イベントオブジェクト
+ */
 function run(e) {
 
   const scriptProperties = PropertiesService.getScriptProperties();
@@ -18,7 +23,7 @@ function run(e) {
   const maxItem = Number(itemResponses[3].getResponse());
   const random = itemResponses[4].getResponse();
 
-  let data = getData(sheetId, inputSheet, outputSheet, section, 1, 2); // Sectionのセルの位置を指定
+  let data = getData(sheetId, inputSheet, outputSheet, section);
   let colName = data.splice(0, 1)[0]; // カラム名が格納されている最初の配列を切り出す
 
   if (random == 'ランダムにする') {
@@ -34,28 +39,36 @@ function run(e) {
 
 /**
  * getData
- * 指定されたシートからフォームの問題文と選択肢を取得する
- *
- * @param {outputSheet:text} フォームの問題文と選択肢を取得するシートの名前
- * @param {startRow:int} 問題文と選択肢が格納されている先頭の行番号
- * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
- * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
+ * 指定されたシートでQUERY関数を実行し、データを全て取得する
+ * 
+ * @param {string} sheetId データを取得するスプレッドシートのID
+ * @param {string} inputSheet データが格納されているシートの名前
+ * @param {string} outputSheet  QUERY関数を実行するシートの名前
+ * @param {array} section フォームで入力された章番号が格納された１次元配列
+ * @returns {array} 取得したデータの２次元配列
  */
-function getData(sheetId, inputSheet, outputSheet, section, startRow, startCol) {
+function getData(sheetId, inputSheet, outputSheet, section) {
   
   let sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
-  let colNameQuery = '=index(\'' + inputSheet + '\'!A1:N1)';
-  let recodeQuery = '=query(\'' + inputSheet + '\'!A:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
+  let colNameQuery = '=index(\'' + inputSheet + '\'!B1:N1)';
+  let recodeQuery = '=query(\'' + inputSheet + '\'!B:N, "select * where B = \'' + section.join('\' or B = \'') + '\'")';
 
   sheet.getRange(1,1).setValue(colNameQuery);
   sheet.getRange(2,1).setValue(recodeQuery);
 
-  let rows = sheet.getLastRow();
-  let cols = sheet.getLastColumn();
+  let lastRow = sheet.getLastRow();
+  let lastCol = sheet.getLastColumn();
   
-  return sheet.getRange(startRow, startCol, rows - startRow + 1, cols - startCol + 1).getValues();
+  return sheet.getRange(1, 1, lastRow, lastCol).getValues();
 }
 
+/**
+ * dataShuffle
+ * 配列の要素をランダムに並び替える
+ * 
+ * @param {*} data 
+ * @returns {array}
+ */
 function dataShuffle(data) {
   
   for(let i = (data.length - 1); 0 < i; i--){
@@ -74,12 +87,15 @@ function dataShuffle(data) {
 /**
  * createForm
  * 指定されたデータでGoogleフォームを生成する
- *
- * @param {title:text} フォームの問題文と選択肢を取得するシートの名前
- * @param {description:text} 問題文と選択肢が格納されている先頭の行番号
- * @param {data:array} 問題文と選択肢が格納されている先頭の列番号
- * @param {colName:array} 全てのカラム名
- * @return {form} 生成されたGoogleフォーム(オブジェクト)
+ * 
+ * @param {string} formId コピー元のフォームのID
+ * @param {string} imageFolderId 画像が格納されているフォルダのID
+ * @param {string} title 入力されたフォームのタイトル
+ * @param {string} description 入力されたフォームの説明
+ * @param {array} colName カラム名が格納されている配列
+ * @param {array} data 取得したデータの２次元配列
+ * @param {int} maxItem 入力された出題数の上限
+ * @returns {form} 生成されたGoogleフォーム(オブジェクト)
  */
 function createForm(formId, imageFolderId, title, description, colName, data, maxItem) {
   
@@ -186,6 +202,13 @@ function moveForm(formFolderId, form) {
   createdForm.moveTo(folder);
 }
 
+/**
+ * sendMail
+ * フォームのリンクを指定された宛先にメールで送信する
+ * 
+ * @param {string} mailAddress 入力されたメールアドレス 
+ * @param {*} form Googleフォームオブジェクト
+ */
 function sendMail(mailAddress, form) {
 
   let subject = 'テスト送信';
