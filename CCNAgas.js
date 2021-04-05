@@ -14,8 +14,8 @@ function run(e) {
   let title = itemResponses[0].getResponse();
   let description = itemResponses[1].getResponse();
   let section = itemResponses[2].getResponse();
-  let random = itemResponses[3].getResponse();
-  let maxItem = Number(itemResponses[4].getResponse());
+  let maxItem = Number(itemResponses[3].getResponse());
+  let random = itemResponses[4].getResponse();
 
   let data = getData(section, 1, 2); // データを取得するセルの開始位置(sectionカラムの最初のレコード)を入力
   let colName = data.splice(0, 1)[0]; // カラム名が格納されている最初の配列を切り出す
@@ -29,21 +29,6 @@ function run(e) {
   
   moveForm(form);
   sendMail(mailAddress, form);
-}
-
-function dataShuffle(data) {
-  
-  for(let i = (data.length - 1); 0 < i; i--){
-
-    // 0〜(i+1)の範囲で値を取得
-    let r = Math.floor(Math.random() * (i + 1));
-
-    // 要素の並び替えを実行
-    let tmp = data[i];
-    data[i] = data[r];
-    data[r] = tmp;
-  }
-  return data;
 }
 
 /**
@@ -68,6 +53,21 @@ function getData(section, startRow, startCol) {
   let cols = sheet.getLastColumn();
   
   return sheet.getRange(startRow, startCol, rows - startRow + 1, cols - startCol + 1).getValues();
+}
+
+function dataShuffle(data) {
+  
+  for(let i = (data.length - 1); 0 < i; i--){
+
+    // 0〜(i+1)の範囲で値を取得
+    let r = Math.floor(Math.random() * (i + 1));
+
+    // 要素の並び替えを実行
+    let tmp = data[i];
+    data[i] = data[r];
+    data[r] = tmp;
+  }
+  return data;
 }
 
 /**
