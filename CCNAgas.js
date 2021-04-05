@@ -19,10 +19,31 @@ function run(e) {
 
   let data = getData(section, 1, 2); // データを取得するセルの開始位置(sectionカラムの最初のレコード)を入力
   let colName = data.splice(0, 1)[0]; // カラム名が格納されている最初の配列を切り出す
+
+  if (random == 'ランダムにする') {
+    
+    data = dataShuffle(data);
+  }
+
   let form = createForm(title, description, colName, data, maxItem);
   
   moveForm(form);
   sendMail(mailAddress, form);
+}
+
+function dataShuffle(data) {
+  
+  for(let i = (data.length - 1); 0 < i; i--){
+
+    // 0〜(i+1)の範囲で値を取得
+    let r = Math.floor(Math.random() * (i + 1));
+
+    // 要素の並び替えを実行
+    let tmp = data[i];
+    data[i] = data[r];
+    data[r] = tmp;
+  }
+  return data;
 }
 
 /**
