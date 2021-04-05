@@ -1,23 +1,24 @@
-const formId = '1DBtgB_OBGMczLGXKKfnD1v3m0DxnyZormL8Vp1TAbqQ'; // コピー元のフォームID
-const sheetId = '1Z081NXbESs3ScnEbHABV2n4msii26mDqW2KaSbDuE3g'; // スプレッドシートのID
-const inputSheet = 'テーブル'; // データテーブルのシート名
-const outputSheet = 'テスト作成';　//　出力先のシート名
-const imageFolderId = '1Tbd4EPXxSxyIirGY8S7mMmPCEyg_GUdN'; // 画像が保存されているフォルダID
-const formFolderId = '1-C23Mbz4Q7IvRpocpmL39kRRROiTLJvv'; // 移動先のフォルダID
-
 
 // 必ずインストーラブルトリガーをrunに指定すること
 function run(e) {
 
-  let mailAddress = e.response.getRespondentEmail();
-  let itemResponses = e.response.getItemResponses();
-  let title = itemResponses[0].getResponse();
-  let description = itemResponses[1].getResponse();
-  let section = itemResponses[2].getResponse();
-  let maxItem = Number(itemResponses[3].getResponse());
-  let random = itemResponses[4].getResponse();
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const formId = scriptProperties.getProperty('formId');
+  const sheetId = scriptProperties.getProperty('sheetId');
+  const inputSheet = scriptProperties.getProperty('inputSheet');
+  const outputSheet = scriptProperties.getProperty('outputSheet');
+  const imageFolderId = scriptProperties.getProperty('imageFolderId');
+  const formFolderId = scriptProperties.getProperty('formFolderId');
 
-  let data = getData(section, 1, 2); // データを取得するセルの開始位置(sectionカラムの最初のレコード)を入力
+  const mailAddress = e.response.getRespondentEmail();
+  const itemResponses = e.response.getItemResponses();
+  const title = itemResponses[0].getResponse();
+  const description = itemResponses[1].getResponse();
+  const section = itemResponses[2].getResponse();
+  const maxItem = Number(itemResponses[3].getResponse());
+  const random = itemResponses[4].getResponse();
+
+  let data = getData(sheetId, inputSheet, outputSheet, section, 1, 2); // Sectionのセルの位置を指定
   let colName = data.splice(0, 1)[0]; // カラム名が格納されている最初の配列を切り出す
 
   if (random == 'ランダムにする') {
@@ -25,9 +26,9 @@ function run(e) {
     data = dataShuffle(data);
   }
 
-  let form = createForm(title, description, colName, data, maxItem);
+  let form = createForm(formId, imageFolderId, title, description, colName, data, maxItem);
   
-  moveForm(form);
+  moveForm(formFolderId, form);
   sendMail(mailAddress, form);
 }
 
@@ -40,7 +41,7 @@ function run(e) {
  * @param {startCol:int} 問題文と選択肢が格納されている先頭の列番号
  * @return {array} 問題文と選択肢の２次元配列 (指定されたセルから最終行、最終列までが2次元配列として返される)
  */
-function getData(section, startRow, startCol) {
+function getData(sheetId, inputSheet, outputSheet, section, startRow, startCol) {
   
   let sheet = SpreadsheetApp.openById(sheetId).getSheetByName(outputSheet);
   let colNameQuery = '=index(\'' + inputSheet + '\'!A1:N1)';
@@ -80,7 +81,7 @@ function dataShuffle(data) {
  * @param {colName:array} 全てのカラム名
  * @return {form} 生成されたGoogleフォーム(オブジェクト)
  */
-function createForm(title, description, colName, data, maxItem) {
+function createForm(formId, imageFolderId, title, description, colName, data, maxItem) {
   
   let doc = DriveApp.getFileById(formId);
   let file = doc.makeCopy(title);
@@ -178,7 +179,7 @@ function createForm(title, description, colName, data, maxItem) {
  * @param form 生成されたGoogleフォーム(オブジェクト)
  * @param formFolderId 移動先のフォルダID
  */
-function moveForm(form) {
+function moveForm(formFolderId, form) {
 
   let createdForm = DriveApp.getFileById(form.getId());
   let folder = DriveApp.getFolderById(formFolderId);
