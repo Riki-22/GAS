@@ -39,7 +39,7 @@ function run(e) {
 
 /**
  * getData
- * 指定されたシートでQUERY関数を実行し、データを全て取得する
+ * データが格納されているシート(inputSheet)を参照するQUERY関数を出力先のシート(outputSheet)で実行し、データを全て取得する
  * 
  * @param {string} sheetId データを取得するスプレッドシートのID
  * @param {string} inputSheet データが格納されているシートの名前
@@ -86,7 +86,7 @@ function dataShuffle(data) {
 
 /**
  * createForm
- * 指定されたデータでGoogleフォームを生成する
+ * コピーしたフォームに指定されたデータを追加する
  * 
  * @param {string} formId コピー元のフォームのID
  * @param {string} imageFolderId 画像が格納されているフォルダのID
@@ -95,15 +95,15 @@ function dataShuffle(data) {
  * @param {array} colName カラム名が格納されている配列
  * @param {array} data 取得したデータの２次元配列
  * @param {int} maxItem 入力された出題数の上限
- * @returns {form} 生成されたGoogleフォーム(オブジェクト)
+ * @returns {form} Googleフォーム(オブジェクト)
  */
 function createForm(formId, imageFolderId, title, description, colName, data, maxItem) {
   
   let doc = DriveApp.getFileById(formId);
   let file = doc.makeCopy(title);
-  let form = FormApp.openById(file.getId());
+  let copiedForm = FormApp.openById(file.getId());
 
-  form.setTitle(title)
+  copiedForm.setTitle(title)
     .setDescription(description);
     
   let numOfQuestions;
@@ -128,7 +128,7 @@ function createForm(formId, imageFolderId, title, description, colName, data, ma
     if (imageFolder.getFilesByName(imageName).hasNext()) {
       
       let blob = imageFolder.getFilesByName(imageName).next().getBlob();
-      let imageItem = form.addImageItem();
+      let imageItem = copiedForm.addImageItem();
       
       imageItem.setImage(blob)
         .setTitle(section_questionNum + '：図を参照して次の設問に回答してください。')
@@ -143,8 +143,7 @@ function createForm(formId, imageFolderId, title, description, colName, data, ma
     // 解答が１つの場合はラジオアイテム、複数の場合はチェックボックスアイテムを追加
     if (answer.length == 1) {
 
-      item = form.addMultipleChoiceItem();
-      
+      item = copiedForm.addMultipleChoiceItem();      
       item.setTitle(questionTitle);
       
       // 選択肢a~fまでを追加
@@ -161,10 +160,10 @@ function createForm(formId, imageFolderId, title, description, colName, data, ma
       }
     } else {
 
-      item = form.addCheckboxItem();
-      let answers = answer.split(',');
-      
+      item = copiedForm.addCheckboxItem();
       item.setTitle(questionTitle);
+
+      let answers = answer.split(',');
       
       for (let j = colName.indexOf('a') ; j <= colName.indexOf('f') ; j++) {
       
@@ -185,14 +184,14 @@ function createForm(formId, imageFolderId, title, description, colName, data, ma
       .setFeedbackForIncorrect(FormApp.createFeedback().setText(commentary).build());
   }
   
-  return form;
+  return copiedForm;
 }
 
 /**
  * moveForm
- * 生成したフォームを指定のフォルダに移動する
+ * フォームを指定のフォルダに移動する
  * 
- * @param form 生成されたGoogleフォーム(オブジェクト)
+ * @param form Googleフォーム(オブジェクト)
  * @param formFolderId 移動先のフォルダID
  */
 function moveForm(formFolderId, form) {
@@ -207,7 +206,7 @@ function moveForm(formFolderId, form) {
  * フォームのリンクを指定された宛先にメールで送信する
  * 
  * @param {string} mailAddress 入力されたメールアドレス 
- * @param {*} form Googleフォームオブジェクト
+ * @param {*} form Googleフォーム(オブジェクト)
  */
 function sendMail(mailAddress, form) {
 
